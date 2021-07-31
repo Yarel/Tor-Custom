@@ -137,12 +137,13 @@ def start_torghost():
 
     iptables_rules = \
         """
+	iptables-save > /tmp/iptables_backup
 	NON_TOR="192.168.1.0/24 192.168.0.0/24"
 	TOR_UID=%s
 	TRANS_PORT="9040"
 
-	iptables -F
-	iptables -t nat -F
+    #iptables -F
+	#iptables -t nat -F
 
 	iptables -t nat -A OUTPUT -m owner --uid-owner $TOR_UID -j RETURN
 	iptables -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports 5353
@@ -179,6 +180,7 @@ def stop_torghost():
 	iptables -t mangle -F
 	iptables -F
 	iptables -X
+    iptables-restore < /tmp/iptables_backup
 	"""
     os.system(IpFlush)
     os.system('sudo fuser -k 9051/tcp > /dev/null 2>&1')
